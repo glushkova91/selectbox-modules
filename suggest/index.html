@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Suggest</title>
+	<script type="text/javascript" src="suggest.js"></script>
+</head>
+<body>
+<style>
+	.suggestions{
+		border: 1px solid #aaaaaa;
+		margin-top: 10px;
+		padding: 10px;
+		width: 300px;
+		box-sizing: border-box;
+	}
+	.suggestionsItem{
+		cursor: pointer;
+		margin-bottom: 5px;
+	}
+	.suggestionsList{
+		padding: 0;
+		margin: 0;
+	}
+	li{
+		list-style: none;
+	}
+	.fieldAutocomlete{
+		height: 35px;
+		padding: 0 10px;
+		box-sizing: border-box;
+		border: 1px solid #aaaaaa;
+		width: 300px;
+		font-size: 14px;
+	}
+</style>
+<script>
+	window.onload = function(){
+
+		var terms = [];
+
+		for (var name in window){
+			terms.push(name);
+		}
+
+		var inputSug = new suggestInput({
+
+			field: document.getElementById('field'),
+//			data: terms,
+			callback: function(){
+//				console.log(567);
+			},
+			index: 2,
+			url: 'test.json'
+//			callbackThisArg: window // контекст для callback, если нужен
+		});
+	}
+
+</script>
+<div class="wrapper">
+	<input class="fieldAutocomlete" type="text" id="field" />
+</div>
+
+</body>
+</html>

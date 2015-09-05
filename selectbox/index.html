@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Select Box</title>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script type="text/javascript" src="selectbox-jquery.js"></script>
+</head>
+<body>
+<style>
+	body{
+		font-size: 14px;
+		font-family: sans-serif;
+	}
+	li{
+		list-style: none;
+	}
+	.selectBoxList{
+		display: none;
+		position: absolute;
+		border: 1px solid #aaaaaa;
+		width: 200px;
+		box-sizing: border-box;
+		padding: 10px;
+	}
+	.selectBoxWrap.isOpen .selectBoxList{
+		display: block;
+	}
+
+	.selectBoxWrap{
+		width: 200px;
+		float: left;
+		margin-right: 15px;
+	}
+	.selectBoxWrap.selectBoxDisable{
+		opacity: 0.7
+	}
+	.selectBoxItem{
+		margin-bottom: 5px;
+		cursor: pointer;
+	}
+	.selectBoxItem.disabled{
+		opacity: 0.7;
+	}
+	.selectBoxInput{
+		height: 35px;
+		padding: 7px 10px;
+		box-sizing: border-box;
+		border: 1px solid #aaaaaa;
+		width: 100%;
+		font-size: 14px;
+		cursor: pointer;
+	}
+</style>
+<script>
+	$(document).ready(function(){
+
+		var selects = $('.selectCustom');
+		var selectCustom = new selectBox(selects);
+
+		selects.on('change', function(){
+			console.log($(this).val());
+		});
+		selects.eq(0).find('option').eq(1).html('change in code');
+		selectCustom.rebuild();
+	});
+
+</script>
+<div class="wrapper">
+	<select class="selectCustom">
+		<option>Выберите помощника</option>
+		<option value="1">Тирион Ланистер</option>
+		<option value="2">Дамблдор</option>
+		<option value="3">Дюран</option>
+		<option value="4">Бэтмен</option>
+	</select>
+	<select class="selectCustom">
+		<option>Выберите врага</option>
+		<option value="1">Рамси Болтон</option>
+		<option value="2">Ниган</option>
+		<option value="3" disabled>Джокер</option>
+		<option value="4">Магнето</option>
+	</select>
+</div>
+
+</body>
+</html>
