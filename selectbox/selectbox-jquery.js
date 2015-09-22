@@ -41,6 +41,8 @@ function selectBox(elem){
 
 					var option = $('<li>', {class: 'selectBoxItem', text: opt.textContent}).attr('data-val', opt.value);
 
+					if(opt.value == val) option.addClass('selected');
+
 					if(opt.getAttribute("disabled") !== null) option.addClass('disabled');
 
 					array.push(option);
@@ -137,35 +139,36 @@ function selectBox(elem){
 	});
 	for(var i = 0; i < boxObjects.length; i++){
 
-		boxObjects[i].input.on("click", function(e) {
+		(function(i){
+			boxObjects[i].input.on("click", function(e) {
 
-			var wrap = $(this).closest('.selectBoxWrap');
-			var index = wrap.attr('data-index');
+				var wrap = $(this).closest('.selectBoxWrap');
 
-			if(wrap.hasClass('selectBoxDisable')) return;
+				if(wrap.hasClass('selectBoxDisable')) return;
 
-			if(boxObjects[index].wrap.hasClass('isOpen')){
+				if(boxObjects[i].wrap.hasClass('isOpen')){
 
-				boxObjects[index].wrap.removeClass('isOpen');
-			}else{
-				_private.hideAllBoxes();
-				boxObjects[index].wrap.addClass('isOpen');
-			}
-		});
-		boxObjects[i].list.on("click", function(e) {
+					boxObjects[i].wrap.removeClass('isOpen');
+				}else{
+					_private.hideAllBoxes();
+					boxObjects[i].wrap.addClass('isOpen');
+				}
+			});
+			boxObjects[i].list.on("click", function(e) {
 
-			var wrap = $(this).closest('.selectBoxWrap');
-			var index = wrap.attr('data-index');
-			var value = e.target.getAttribute('data-val');
-			var text = e.target.textContent;
+				var value = e.target.getAttribute('data-val');
+				var text = e.target.textContent;
 
-			if(e.target.nodeName != 'LI' || $(e.target).hasClass('disabled')) return;
+				if(e.target.nodeName != 'LI' || $(e.target).hasClass('disabled')) return;
 
-			_private.changeValueCustom(text, index);
-			select.eq(index).val(value).trigger('change');
-			boxObjects[index].wrap.removeClass('isOpen');
+				_private.changeValueCustom(text, i);
+				select.eq(i).val(value).trigger('change');
+				boxObjects[i].wrap.removeClass('isOpen');
 
-		});
+				$('.selectBoxItem').removeClass('selected');
+				$(e.target).addClass('selected');
+			});
+		})(i);
 	}
 
 	return _public;
