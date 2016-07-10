@@ -31,26 +31,37 @@
 		border: 1px solid #aaaaaa;
 		width: 200px;
 		box-sizing: border-box;
-		padding: 10px;
+		padding: 7px 0;
+		margin: 5px 0 0 0;
 	}
 	.selectBoxWrap.isOpen .selectBoxList{
 		display: block;
 	}
-
+	.selectBoxWrap.openToTop .selectBoxList{
+		top: -134px;
+	}
 	.selectBoxWrap{
 		width: 200px;
 		float: left;
 		margin-right: 15px;
+		position: relative;
 	}
 	.selectBoxWrap.selectBoxDisable{
 		opacity: 0.7
 	}
 	.selectBoxItem{
-		margin-bottom: 5px;
+		padding: 5px 10px;
 		cursor: pointer;
+	}
+	.selectBoxItem.hover-in{
+		background-color: #e6e1e1;
+	}
+	.selectBoxItem.disabled.hover-in{
+		background-color: white;
 	}
 	.selectBoxItem.disabled{
 		opacity: 0.7;
+		cursor: default;
 	}
 	.selectBoxItem .match{
 		font-weight: bold;
@@ -66,14 +77,14 @@
 </style>
 
 <div class="wrapper">
-	<select class="selectCustom">
+	<select class="selectCustom" data-placeholder="Выберите помощника">
 		<option>Выберите помощника</option>
 		<option value="1">Тирион Ланистер</option>
 		<option value="2">Дамблдор</option>
 		<option value="3" selected>Дюран</option>
 		<option value="4">Бэтмен</option>
 	</select>
-	<select class="selectCustom">
+	<select class="selectCustom" data-placeholder="Выберите врага">
 		<option>Выберите врага</option>
 		<option value="1">Рамси Болтон</option>
 		<option value="2">Ниган</option>
