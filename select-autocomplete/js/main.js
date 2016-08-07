@@ -1,20 +1,3 @@
-$(function () {
-	$(document).ready(function () {
-		var selects = $('.selectCustom');
-
-		selects.on('change', function(){
-			console.log($(this).val());
-		});
-		var select = new selectAutocomplete({
-			elem: selects
-		});
-
-
-		//select.init({elem:selects});
-		selects.eq(0).find('option').eq(1).html('change in code');
-		select.rebuild();
-	});
-});
 var selectAutocomplete = function(opts){
 	var KEY_CODE_UP = 38;
 	var KEY_CODE_DOWN = 40;
@@ -38,8 +21,8 @@ var selectAutocomplete = function(opts){
 					$elem.css('display','none');
 
 				},
-				createBox: function ($elem) {
-					var index = $elem.attr('data-autocomlete-index');
+				createBox: function ($elem, index) {
+
 					var $list = _private.methods.createList(index);
 					var $input = _private.methods.createInput($elem, index);
 					_private.objects.boxObjects[index].$wrap = $('<div>', {class: 'selectBoxWrap'}).attr('data-index', index)
@@ -80,7 +63,7 @@ var selectAutocomplete = function(opts){
 				},
 				createInput: function ($elem, i) {
 
-					var $currentElem = $('options', $elem).eq($elem[0].selectedIndex);
+					var $currentElem = $('option', $elem).eq($elem[0].selectedIndex);
 					var currentText = ($currentElem.attr('value')) ? $currentElem.text() : '';
 
 					_private.objects.boxObjects[i].$input = $('<input>', {class: 'fieldAutocomlete', type: 'text'})
@@ -90,11 +73,12 @@ var selectAutocomplete = function(opts){
 
 					return _private.objects.boxObjects[i].$input;
 				},
-				changeValue: function ($elem, value) {
+				changeValue: function ($elem, text, value) {
 
-					var index = $elem.attr('data-autocomlete-index');
-					_private.objects.boxObjects[index].$input.val(value)
-						.attr('data-txt', value);
+					var index = $elem.attr('data-autocomplete-index');
+					_private.objects.boxObjects[index].$input.val(text)
+						.attr('data-txt', text);
+					if(value) _private.objects.$select.eq(index).val(value).trigger('change');
 				},
 				hideAllBoxes: function () {
 					_private.objects.boxObjects.forEach(function (object, index) {
@@ -102,10 +86,10 @@ var selectAutocomplete = function(opts){
 					});
 				},
 				updateData: function ($elem) {
-					var i = $elem.attr('data-autocomlete-index');
+					var i = $elem.attr('data-autocomplete-index');
 					var options = _private.methods.createItems(i);
 					var $currentElem = $elem.find('option').eq($elem[0].selectedIndex);
-					var currentText = ($currentElem.attr('value')) ? $('options', $elem).eq($elem[0].selectedIndex).text() : '';
+					var currentText = ($currentElem.attr('value')) ? $('option', $elem).eq($elem[0].selectedIndex).text() : '';
 					var liParent = _private.objects.boxObjects[i].$list.find('.selectBoxItem').parent();
 					_private.objects.boxObjects[i].$list.find('.selectBoxItem').remove();
 
@@ -114,7 +98,7 @@ var selectAutocomplete = function(opts){
 						liParent.append(option);
 					});
 
-					_private.methods.changeValue($elem, currentText);
+					_private.methods.changeValue($elem, currentText, $currentElem.val());
 				},
 				searchQuery: function (query, k) {
 
@@ -164,13 +148,27 @@ var selectAutocomplete = function(opts){
 					}
 				},
 				closeBox: function(index){
+					if(!_private.objects.boxObjects[index].$wrap.hasClass('isOpen')) return;
+
 					_private.objects.boxObjects[index].$wrap.removeClass('isOpen').removeClass('openToTop');
 					$(document).off('keydown', _private.methods.onKeyDown);
+
+					if(typeof opts.onClose == 'function'){
+						opts.onClose.bind(_private.objects.$select.eq(index))();
+					}
 				},
 				openBox: function(index){
+					if(_private.objects.boxObjects[index].$wrap.hasClass('isOpen')) return;
+
 					var positionClass =_private.methods.detectBoxPositionClass(index);
 					_private.objects.boxObjects[index].$wrap.addClass('isOpen').addClass(positionClass);
-					$(document).on('keydown', _private.methods.onKeyDown);
+					$(document)
+						.off('keydown', _private.methods.onKeyDown)
+						.on('keydown', _private.methods.onKeyDown);
+
+					if(typeof opts.onOpen == 'function'){
+						opts.onOpen.bind(_private.objects.$select.eq(index))();
+					}
 				},
 				detectBoxPositionClass: function(index){
 					var height = _private.objects.boxObjects[index].$list.height(),
@@ -187,14 +185,14 @@ var selectAutocomplete = function(opts){
 
 						switch (e.keyCode) {
 						case KEY_CODE_UP:
-							var $prev = $hoverItem.prevAll(':not(.disabled)').eq(0);
+							var $prev = $hoverItem.prevAll(':not(.disabled):visible').eq(0);
 							if($prev.length){
 								$hoverItem.removeClass('hover-in');
 								$prev.addClass('hover-in');
 							}
 							break;
 						case KEY_CODE_DOWN:
-							var $next = $hoverItem.nextAll(':not(.disabled)').eq(0);
+							var $next = $hoverItem.nextAll(':not(.disabled):visible').eq(0);
 							if($next.length){
 								$hoverItem.removeClass('hover-in');
 								$next.addClass('hover-in');
@@ -234,9 +232,9 @@ var selectAutocomplete = function(opts){
 
 					_private.objects.boxObjects.forEach(function (object, i) {
 						if(object.$input.val() === ''){
-							_private.methods.changeValue(_private.objects.$select.filter('[data-autocomlete-index="'+i+'"]'), '');
+							_private.methods.changeValue(_private.objects.$select.filter('[data-autocomplete-index="'+i+'"]'), '', '');
 						}else{
-							_private.methods.changeValue(_private.objects.$select.filter('[data-autocomlete-index="'+i+'"]'), object.$input.attr('data-txt'));
+							_private.methods.changeValue(_private.objects.$select.filter('[data-autocomplete-index="'+i+'"]'), object.$input.attr('data-txt'));
 						}
 					});
 				},
@@ -246,12 +244,10 @@ var selectAutocomplete = function(opts){
 				chooseOption: function($option){
 					var $wrap = $option.closest('.selectBoxWrap');
 					var index = $wrap.attr('data-index');
-					var value = $option.attr('data-val');
 					var text = $option.text();
 					var $elem = $wrap.prev(_private.objects.$select);
 
-					_private.methods.changeValue($elem, text);
-					_private.objects.$select.eq(index).val(value).trigger('change');
+					_private.methods.changeValue($elem, text, $option.val());
 					_private.methods.closeBox(index);
 					_private.methods.searchQuery(text, index);
 				},
@@ -293,9 +289,9 @@ var selectAutocomplete = function(opts){
 						_private.params.terms[i] = [];
 						_private.objects.boxObjects[i] = {};
 
-						$(elem).attr('data-autocomlete-index', i);
+						$(elem).attr('data-autocomplete-index', i);
 						_private.methods.hideNativeSelect($(elem));
-						_private.methods.createBox($(elem));
+						_private.methods.createBox($(elem), i);
 					});
 				},
 				init: function () {
@@ -311,7 +307,7 @@ var selectAutocomplete = function(opts){
 			rebuild: function () {
 
 				_private.objects.$select.each(function (i, elem) {
-					var index = $(elem).attr('data-autocomlete-index');
+					var index = $(elem).attr('data-autocomplete-index');
 					_private.methods.updateData($(elem));
 				});
 

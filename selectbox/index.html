@@ -26,21 +26,34 @@
 	.selectBoxWrap.isOpen .selectBoxList{
 		display: block;
 	}
-
+	.selectBoxWrap.openToTop .selectBoxList{
+		top: -134px;
+	}
 	.selectBoxWrap{
 		width: 200px;
 		float: left;
 		margin-right: 15px;
+		position: relative;
 	}
 	.selectBoxWrap.selectBoxDisable{
 		opacity: 0.7
 	}
 	.selectBoxItem{
-		margin-bottom: 5px;
+		padding: 5px 10px;
 		cursor: pointer;
+	}
+	.selectBoxItem.hover-in{
+		background-color: #e6e1e1;
+	}
+	.selectBoxItem.disabled.hover-in{
+		background-color: white;
 	}
 	.selectBoxItem.disabled{
 		opacity: 0.7;
+	}
+	.selectBoxItem.selected{
+		background-color: #2464ff;
+		color: white;
 	}
 	.selectBoxInput{
 		height: 35px;
@@ -53,16 +66,28 @@
 	}
 </style>
 <script>
+
 	$(document).ready(function(){
 
 		var selects = $('.selectCustom');
-		var selectCustom = new selectBox(selects);
+		var selectCustom = new selectBox({
+			elem: selects,
+			onClose: function(){
+				console.log(this + 'close');
+			},
+			onOpen: function(){
+				console.log(this + 'open');
+			}
+		});
 
 		selects.on('change', function(){
 			console.log($(this).val());
 		});
 		selects.eq(0).find('option').eq(1).html('change in code');
 		selectCustom.rebuild();
+		setTimeout(function(){
+			selectCustom.setValue(2);
+		}, 2000)
 	});
 
 </script>
@@ -72,7 +97,7 @@
 		<option value="1">Тирион Ланистер</option>
 		<option value="2">Дамблдор</option>
 		<option value="3">Дюран</option>
-		<option value="4">Бэтмен</option>
+		<option value="4" selected>Бэтмен</option>
 	</select>
 	<select class="selectCustom">
 		<option>Выберите врага</option>

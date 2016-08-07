@@ -31,8 +31,7 @@
 		border: 1px solid #aaaaaa;
 		width: 200px;
 		box-sizing: border-box;
-		padding: 7px 0;
-		margin: 5px 0 0 0;
+		padding: 10px;
 	}
 	.selectBoxWrap.isOpen .selectBoxList{
 		display: block;
@@ -75,7 +74,29 @@
 		font-size: 14px;
 	}
 </style>
+<script>
+	$(function () {
+		$(document).ready(function () {
+			var selects = $('.selectCustom');
 
+			selects.on('change', function(){
+				console.log($(this).val());
+			});
+			var select = new selectAutocomplete({
+				elem: selects,
+				onClose: function(){
+					console.log(this + 'close');
+				},
+				onOpen: function(){
+					console.log(this + 'open');
+				}
+			});
+
+			selects.eq(0).find('option').eq(1).html('change in code');
+			select.rebuild();
+		});
+	});
+</script>
 <div class="wrapper">
 	<select class="selectCustom" data-placeholder="Выберите помощника">
 		<option>Выберите помощника</option>
@@ -86,7 +107,7 @@
 	</select>
 	<select class="selectCustom" data-placeholder="Выберите врага">
 		<option>Выберите врага</option>
-		<option value="1">Рамси Болтон</option>
+		<option value="1" >Рамси Болтон</option>
 		<option value="2">Ниган</option>
 		<option value="3" disabled>Джокер</option>
 		<option value="4">Магнето</option>
